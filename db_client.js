@@ -1,64 +1,93 @@
 const mysql = require('mysql2');
+let mysqlInstance = null;
 
-const executeWrapper = ({host, user, password, db}, executor) => {
+async function getConnection({host, user, password}) {
 
-    const c = mysql.createConnection({host, user, password});
+    if (!mysqlInstance) {
 
-    c.connect(function (err) {
+        mysqlInstance = mysql.createConnection({host, user, password}).promise();
+
+        await mysqlInstance.connect();
+
+    }
+
+    function getInstance() {
+
+        return mysqlInstance;
+
+    }
+
+    return getInstance;
+}
+
+async function executeNonScalarQuery({host, user, password}, query) {
+
+    const getInstance = await getConnection({host, user, password});
+
+    const con = getInstance();
+
+    try {
+
+        await con.query(query);
+
+        console.log(`>> Executed non-scalar query`);
+
+    } catch (err) {
+
+        throw new Error(`mysql QUERY failed with message ${err.message}`);
+
+    }
+
+}
+
+async function executeQuery({host, user, password}, query, callback, limit = 5) {
+
+    const getInstance = await getConnection({host, user, password});
+
+    const con = getInstance();
+
+    try {
+
+        const result = await con.query(query + ` limit ${limit}`);
+
+        console.log(`>> Last ${limit} Results in Actor:`);
+
+        const rows = result[0];
+        // const defs = result[1]; Definitions
+
+        rows.forEach(callback);
+
+    } catch (err) {
+
+        throw new Error(`mysql QUERY failed with message ${err.message}`);
+
+    }
+
+}
+async function executeCommand({host, user, password}, command) {
+
+    const getInstance = await getConnection({host, user, password});
+
+    const con = getInstance();
+
+    try {
+
+        await con.execute(command);
+
+        const commandToken = command.split(' ');
+
+        console.warn(`>> Command ${commandToken[0]} succeeded`);
+
+    } catch (err) {
+
+        const commandToken = command.split();
 
         if (err)
-            throw new Error(`mysql CONNECT failed with message ${err.message}`);
+            throw new Error(`mysql COMMAND ${commandToken} failed with message ${err.message}`);
 
-        console.log('>> Connected');
+        console.warn(`>> Command ${commandToken[0]} succeeded`);
 
-        c.query(`use ${db}`, function () {
-
-            if (err)
-                throw new Error(`mysql USE DB failed with message ${err.message}`);
-
-            console.log(`>> DB ${db} selected.`);
-
-            executor(c);
-        });
-    });
-
-    return c;
-};
-
-function executeQuery(config, query, limit = 5) {
-
-    executeWrapper(config, (con) => {
-
-        con.query(query + ` limit ${limit}`, function (err, result) {
-
-            if (err)
-                throw new Error(`mysql QUERY failed with message ${err.message}`);
-
-            if (Array.isArray(result)) {
-                console.log(`>> Last ${limit} Results in Actor:`)
-                result.forEach(({actor_id, first_name, last_name}) => {
-                    console.log(`[-] Actor ${actor_id}: ${first_name},${last_name}`);
-                })
-            }
-        })
-    });
+    }
 }
 
-function executeCommand(config, command) {
-
-    executeWrapper(config, (con) => {
-
-        con.execute(command, function (err) {
-
-            const commandToken = command.split();
-
-            if (err)
-                throw new Error(`mysql COMMAND ${commandToken} failed with message ${err.message}`);
-
-            console.warn(`>> Command ${commandToken[0]} succeeded`);
-        });
-
-    });
-}
-
-module.exports = {executeQuery, executeCommand};
+module.exports = {executeQuery, executeCommand, executeNonScalarQuery};

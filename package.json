@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test_user1": "node mysql-example.js user password"
+    "test_user1": "node mysql-example-01.js root root"
   },
   "keywords": [],
   "author": "",
