@@ -34,7 +34,7 @@ async function executeNonScalarQuery({host, user, password}, query) {
 
     } catch (err) {
 
-        throw new Error(`mysql QUERY failed with message ${err.message}`);
+        throw new Error(`mysql QUERY ${query} failed with message ${err.message}`);
 
     }
 
@@ -59,7 +59,7 @@ async function executeQuery({host, user, password}, query, callback, limit = 5) 
 
     } catch (err) {
 
-        throw new Error(`mysql QUERY failed with message ${err.message}`);
+        throw new Error(`mysql QUERY ${query} failed with message ${err.message}`);
 
     }
 
