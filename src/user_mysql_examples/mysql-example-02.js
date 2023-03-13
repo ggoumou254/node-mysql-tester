@@ -2,15 +2,12 @@ const dbClient = require("../db_client");
 const {names, uniqueNamesGenerator} = require("unique-names-generator");
 
 const [ user = 'user', password = 'password' ] = process.argv.slice(2);
-
-const dbName = 'testDb';
 const host = 'localhost';
 
 const config = {
     host: host,
     user: user,
-    password: password,
-    db: dbName
+    password: password
 };
 
 const uniqueNameGeneratorConfig = {
