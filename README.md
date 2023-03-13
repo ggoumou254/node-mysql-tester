@@ -12,7 +12,7 @@ Then configure the project ``package.json`` with the right arguments for each of
   "main": "index.js",
   "scripts": {
     "test_user1": "node mysql-example-01.js user password",
-    "test_user2": "node mysql-example-02.js root root"
+    "test_user2": "node mysql-example-02.js user password"
   },
   "keywords": [],
   "author": "",

@@ -19,7 +19,6 @@ async function getConnection({host, user, password}) {
 
     return getInstance;
 }
-
 async function executeNonScalarQuery({host, user, password}, query) {
 
     const getInstance = await getConnection({host, user, password});
@@ -39,7 +38,6 @@ async function executeNonScalarQuery({host, user, password}, query) {
     }
 
 }
-
 async function executeQuery({host, user, password}, query, callback, limit = 5) {
 
     const getInstance = await getConnection({host, user, password});
@@ -76,7 +74,7 @@ async function executeCommand({host, user, password}, command) {
 
         const commandToken = command.split(' ');
 
-        console.warn(`>> Command ${commandToken[0]} succeeded`);
+        console.log(`>> Command ${commandToken[0]} succeeded`);
 
     } catch (err) {
 
@@ -85,7 +83,7 @@ async function executeCommand({host, user, password}, command) {
         if (err)
             throw new Error(`mysql COMMAND ${commandToken} failed with message ${err.message}`);
 
-        console.warn(`>> Command ${commandToken[0]} succeeded`);
+        console.log(`>> Command ${commandToken[0]} succeeded`);
 
     }
 }

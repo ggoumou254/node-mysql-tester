@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test_user1": "node mysql-example-01.js user password",
-    "test_user2": "node mysql-example-02.js user password"
+    "test_user1": "node src/user_mysql_examples/mysql-example-01.js user password",
+    "test_user2": "node src/user_mysql_examples/mysql-example-02.js user password"
   },
   "keywords": [],
   "author": "",

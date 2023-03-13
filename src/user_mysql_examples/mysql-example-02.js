@@ -1,4 +1,4 @@
-const dbClient = require("./db_client");
+const dbClient = require("../db_client");
 const {names, uniqueNamesGenerator} = require("unique-names-generator");
 
 const [ user = 'user', password = 'password' ] = process.argv.slice(2);
