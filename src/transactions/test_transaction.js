@@ -1,6 +1,6 @@
-import {executeCommand, executeNonScalarQuery, executeQuery, getResults} from "../db_client.js";
+import {executeCommand, executeNonScalarQuery, getResults, setTransaction, timeout} from "../db_client.js";
 
-const [ user = 'user', password = 'password', ilv, delay = 0 ] = process.argv.slice(2);
+const [user = 'user', password = 'password', ilv, delay = 0] = process.argv.slice(2);
 
 const config = {
     host: 'localhost',
@@ -8,9 +8,9 @@ const config = {
     password: password
 };
 
-const dbName = 'easybank';
+const dbName = `easybank`;
 
-const executeTransaction = async (dbClient, transactionLevel, delay)  => {
+const executeTransaction = async (config, dbName, transactionLevel, delay) => {
 
     // user wants to pay 100 to buying something
 
@@ -18,7 +18,7 @@ const executeTransaction = async (dbClient, transactionLevel, delay)  => {
 
     // set transaction settings
 
-    await setTransaction(dbClient, transactionLevel);
+    await setTransaction(config, dbName, transactionLevel);
 
     await timeout(delay);
 
@@ -55,32 +55,8 @@ const executeTransaction = async (dbClient, transactionLevel, delay)  => {
 
 }
 
-executeTransaction(ilv, delay).then(() => {
+executeTransaction(config, dbName, ilv, delay).then(() => {
+
     console.log('transaction executed');
+
 })
-
-async function timeout(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-async function setTransaction(transactionLevelId) {
-
-    const isolationLevels = []
-    isolationLevels['RR'] = 'REPEATABLE READ';
-    isolationLevels['RU'] = 'READ UNCOMMITTED';
-    isolationLevels['RC'] = 'READ COMMITTED';
-    isolationLevels['SZ'] = 'SERIALIZABLE';
-
-    await executeNonScalarQuery(config, `SET SESSION TRANSACTION ISOLATION LEVEL ${isolationLevels[transactionLevelId]}`);
-    await executeNonScalarQuery(config, `START TRANSACTION`);
-    await executeNonScalarQuery(config, `SET AUTOCOMMIT = 0`);
-    await executeNonScalarQuery(config, `use ${dbName}`);
-
-    await executeQuery(config, `SELECT CONNECTION_ID() as connection_id`, (result) => {
-        console.log(result['connection_id']);
-    }, -1);
-    await executeQuery(config, `SELECT @@transaction_ISOLATION as isolation`, (result) => {
-        console.log(result['isolation']);
-    }, -1);
-
-}

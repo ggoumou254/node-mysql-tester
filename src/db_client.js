@@ -112,3 +112,28 @@ export async function executeCommand({host, user, password}, command) {
 
     }
 }
+export async function setTransaction(config, dbName, transactionLevelId) {
+
+    const isolationLevels = []
+    isolationLevels['RR'] = 'REPEATABLE READ';
+    isolationLevels['RU'] = 'READ UNCOMMITTED';
+    isolationLevels['RC'] = 'READ COMMITTED';
+    isolationLevels['SZ'] = 'SERIALIZABLE';
+
+    await executeNonScalarQuery(config, `SET SESSION TRANSACTION ISOLATION LEVEL ${isolationLevels[transactionLevelId]}`);
+    await executeNonScalarQuery(config, `START TRANSACTION`);
+    await executeNonScalarQuery(config, `SET AUTOCOMMIT = 0`);
+    await executeNonScalarQuery(config, `USE ${dbName}`);
+
+    await executeQuery(config, `SELECT CONNECTION_ID() as connection_id`, (result) => {
+        console.log(result['connection_id']);
+    }, -1);
+    await executeQuery(config, `SELECT @@transaction_ISOLATION as isolation`, (result) => {
+        console.log(result['isolation']);
+    }, -1);
+
+}
+
+export async function timeout(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
