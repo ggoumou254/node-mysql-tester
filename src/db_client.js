@@ -1,7 +1,8 @@
-const mysql = require('mysql2');
+import mysql from "mysql2";
+
 let mysqlInstance = null;
 
-async function getConnection({host, user, password}) {
+export async function getConnection({host, user, password}) {
 
     if (!mysqlInstance) {
 
@@ -19,7 +20,7 @@ async function getConnection({host, user, password}) {
 
     return getInstance;
 }
-async function executeNonScalarQuery({host, user, password}, query) {
+export async function executeNonScalarQuery({host, user, password}, query) {
 
     const getInstance = await getConnection({host, user, password});
 
@@ -38,7 +39,26 @@ async function executeNonScalarQuery({host, user, password}, query) {
     }
 
 }
-async function executeQuery({host, user, password}, query, callback, limit = 5) {
+export async function getResults({host, user, password}, query){
+
+    try {
+
+        const getInstance = await getConnection({host, user, password});
+
+        const con = getInstance();
+
+        const result = await con.query(query);
+
+        return result[0];
+
+    } catch (err) {
+
+        throw new Error(`mysql QUERY ${query} failed with message ${err.message}`);
+
+    }
+
+}
+export async function executeQuery({host, user, password}, query, callback, limit = 5) {
 
     const getInstance = await getConnection({host, user, password});
 
@@ -46,12 +66,17 @@ async function executeQuery({host, user, password}, query, callback, limit = 5) 
 
     try {
 
-        const result = await con.query(query + ` limit ${limit}`);
+        let q = query;
 
-        console.log(`>> Last ${limit} Results in Actor:`);
+        if (limit > 0) {
+            q += ` limit ${limit}`;
+        }
+
+        const result = await con.query(q);
 
         const rows = result[0];
-        // const defs = result[1]; Definitions
+
+        console.log(`>> ${rows.length} results in Query ${query}:`);
 
         rows.forEach(callback);
 
@@ -62,7 +87,7 @@ async function executeQuery({host, user, password}, query, callback, limit = 5) 
     }
 
 }
-async function executeCommand({host, user, password}, command) {
+export async function executeCommand({host, user, password}, command) {
 
     const getInstance = await getConnection({host, user, password});
 
@@ -87,5 +112,3 @@ async function executeCommand({host, user, password}, command) {
 
     }
 }
-
-module.exports = {executeQuery, executeCommand, executeNonScalarQuery};

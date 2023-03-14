@@ -1,4 +1,5 @@
-const dbClient = require("../db_client");
+import {executeCommand, executeNonScalarQuery, executeQuery} from "../db_client";
+
 const {names, uniqueNamesGenerator} = require("unique-names-generator");
 
 const [ user = 'user', password = 'password' ] = process.argv.slice(2);
@@ -17,11 +18,11 @@ const ages = [20, 42, 40, 30, 31, 18];
 const jobs = ['student', 'developer', 'barman', 'impiegato', 'mechanic', 'other'];
 
 const execute = async ()  => {
-    await dbClient.executeNonScalarQuery(config, `CREATE DATABASE IF NOT EXISTS testDb1`);
+    await executeNonScalarQuery(config, `CREATE DATABASE IF NOT EXISTS testDb1`);
 
-    await dbClient.executeNonScalarQuery(config, `use testDb1`);
+    await executeNonScalarQuery(config, `use testDb1`);
 
-    await dbClient.executeNonScalarQuery(config, `
+    await executeNonScalarQuery(config, `
         CREATE TABLE IF NOT EXISTS students(  
             id int NOT NULL AUTO_INCREMENT,  
             name varchar(45) NOT NULL,  
@@ -39,10 +40,10 @@ const execute = async ()  => {
         const job = jobs[Math.floor(Math.random() * jobs.length)];
         const age = ages[Math.floor(Math.random() * ages.length)];
 
-        await dbClient.executeCommand(config, `INSERT INTO students (name, occupation, age) VALUES ('${characterName}', '${job}', ${age})`);
+        await executeCommand(config, `INSERT INTO students (name, occupation, age) VALUES ('${characterName}', '${job}', ${age})`);
     }
 
-    await dbClient.executeQuery(config, `SELECT * FROM students order by id asc`, ({id, name, occupation, age}) => {
+    await executeQuery(config, `SELECT * FROM students order by id asc`, ({id, name, occupation, age}) => {
         console.log(`[-] Student ${id}: ${name},${age}-${occupation}`);
     }, 100);
 }
