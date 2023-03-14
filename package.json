@@ -5,11 +5,11 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test_user1": "node src/user_mysql_examples/mysql-example-01.js user password",
-    "test_user2": "node src/user_mysql_examples/mysql-example-02.js user password",
-    "test_transaction_restore_db": "node src/transactions/restore_db.js user password",
-    "test_transaction_1": "node src/transactions/test_transaction.js user password RR 1000",
-    "test_transaction_2": "node src/transactions/test_transaction.js user password RR 0"
+    "test_user1": "node src/user_examples/mysql-example-01.js user password",
+    "test_user2": "node src/user_examples/mysql-example-02.js user password",
+    "test_transaction_restore_db": "node src/transaction_examples/restore_db.js user password",
+    "test_transaction_1": "node src/transaction_examples/test_transaction.js user password RR 1000",
+    "test_transaction_2": "node src/transaction_examples/test_transaction.js user password RR 0"
   },
   "keywords": [],
   "author": "",
