@@ -1,4 +1,4 @@
-import {executeCommand, executeNonScalarQuery, executeQuery} from "../db_client";
+import {executeCommand, executeNonScalarQuery, executeQuery} from "../db_client.js";
 
 const [ user = 'user', password = 'password' ] = process.argv.slice(2);
 

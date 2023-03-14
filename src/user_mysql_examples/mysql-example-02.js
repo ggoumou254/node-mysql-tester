@@ -1,6 +1,6 @@
-import {executeCommand, executeNonScalarQuery, executeQuery} from "../db_client";
+import {names, uniqueNamesGenerator} from "unique-names-generator";
+import {executeCommand, executeNonScalarQuery, executeQuery} from "../db_client.js";
 
-const {names, uniqueNamesGenerator} = require("unique-names-generator");
 
 const [ user = 'user', password = 'password' ] = process.argv.slice(2);
 const host = 'localhost';
